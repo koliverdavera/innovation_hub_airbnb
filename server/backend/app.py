@@ -22,7 +22,7 @@ mysql = MySQL(app)
 # Index
 @app.route('/')
 def index():
-    return render_template('base.html')
+    return "Hello world!"
 
 
 # User Register
