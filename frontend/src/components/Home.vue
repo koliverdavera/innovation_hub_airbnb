@@ -1,0 +1,360 @@
+<template>
+  <main>
+    <div class="jumbotron">
+      <h1 class="display-4">The Idea</h1>
+      <p class="lead">
+        Do you want to know the best price for your rental accomodation?
+      </p>
+      <hr class="my-4" />
+      <p>
+        Use AirBnb Calculator to discover the best price to rent out your
+        accomodation, set the perfect price with the help of Artificial
+        Intelligence and stay two steps ahead of the competition.
+      </p>
+      <p class="lead">
+        <a class="btn btn-primary btn-lg" href="#here">Calculate Now</a>
+      </p>
+    </div>
+    <img
+      name="pic1"
+      height="350px"
+      width="600px"
+      src="../../public/exchangeHouseMoney.webp"
+    />
+    <fieldset name="calculator" id="here" class="element3">
+      <h1 class="calc_title">Calculator</h1>
+      <br />
+      <br />
+      <div class="col-6">
+        <FormKit
+          type="form"
+          name="calc"
+          @submit="calculatePrice"
+          :plugins="[castRangeToNumber]"
+          submit-label="Calculate"
+          :submit-attrs="{
+            'suffix-icon': 'submit',
+          }"
+          #default="{ value }"
+        >
+          <FormKit
+            type="text"
+            name="address"
+            id="address"
+            validation="required"
+            label="Address"
+            help="Enter the location of the rental place"
+            placeholder="77 rue La Boétie, Paris, 75015"
+            v-model="address"
+            @change="getCoordinates"
+          />
+          <input
+            v-model="longitude"
+            type="hidden"
+            validation-visibility="live"
+          />
+          <input
+            v-model="latitude"
+            type="hidden"
+            validation-visibility="live"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="bedrooms"
+            id="bedrooms"
+            label="Bedrooms"
+            validation="required"
+            validation-visibility="live"
+            help="How many bedrooms does the rental place have?"
+            v-model="bedrooms"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="bathrooms"
+            id="bathrooms"
+            label="Bathrooms"
+            validation="required"
+            validation-visibility="live"
+            help="How many bathrooms does the rental place have?"
+            v-model="bathrooms"
+          />
+          <br />
+          <FormKit
+            type="select"
+            name="propertyType"
+            id="propertyType"
+            placeholder="Select a type"
+            :options="[
+              'Entire rental unit',
+              'Private room in rental unit',
+              'Entire condo',
+              'Room in boutique hotel',
+              'Room in hotel',
+              'Entire loft',
+              'Entire home',
+              'Private room in condo',
+              'Entire townhouse',
+              'Shared room in rental unit',
+            ]"
+            validation="required"
+            label="Property Type"
+            v-model="property_type"
+          />
+          <br />
+          <FormKit
+            type="select"
+            name="roomType"
+            id="roomType"
+            placeholder="Select a type"
+            :options="[
+              'Entire home/apt',
+              'Private room',
+              'Hotel room',
+              'Shared room',
+            ]"
+            validation="required"
+            label="Room Type"
+            v-model="room_type"
+          />
+          <br />
+          <FormKit
+            type="checkbox"
+            name="amenities"
+            id="amenities"
+            placeholder="Select amenities"
+            :options="[
+              {
+                value: 'air_conditioning',
+                label: 'Air conditioning',
+              },
+              {
+                value: 'bed_linen',
+                label: 'Bed linen',
+              },
+              {
+                value: 'tv',
+                label: 'Television',
+              },
+              {
+                value: 'coffee_machine',
+                label: 'Coffee machine',
+              },
+              {
+                value: 'cooking_basics',
+                label: 'Cooking utensils',
+              },
+              {
+                value: 'white_goods',
+                label: 'White goods',
+              },
+              {
+                value: 'elevator',
+                label: 'Elevator',
+              },
+              {
+                value: 'parking',
+                label: 'Parking',
+              },
+              {
+                value: 'host_greeting',
+                label: 'Host greeting',
+              },
+              {
+                value: 'internet',
+                label: 'Internet',
+              },
+              {
+                value: 'long_term_stays',
+                label: 'Long term stays',
+              },
+              {
+                value: 'private_entrance',
+                label: 'Private entrance',
+              },
+              {
+                value: 'other',
+                label: 'Other',
+              },
+            ]"
+            label="Amenities"
+            v-model="amenities"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="accomodates"
+            id="accomodates"
+            validation="required"
+            label="Number of Accomodates"
+            help="Enter the number of accomodates"
+            v-model="accomodates"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="minimum_nights"
+            id="minimum_nights"
+            validation="required"
+            label="Number of Minimum nights"
+            v-model="minimum_nights"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="maximum_nights"
+            id="maximum_nights"
+            validation="required"
+            label="Number of Maximum nights"
+            v-model="maximum_nights"
+          />
+          <br />
+          <pre wrap>{{ value }}</pre>
+        </FormKit>
+      </div>
+    </fieldset>
+  </main>
+</template>
+
+<script>
+import Map from "./Map.vue";
+
+export default {
+  name: "Home",
+  data() {
+    return {
+      address: "",
+      longitude: "",
+      latitude: "",
+      bedrooms: "",
+      bathrooms: "",
+      accomodates: "",
+      room_type: "",
+      property_type: "",
+      amenities: "",
+      minimum_nights: "",
+      maximum_nights: "",
+      
+    };
+  },
+  methods: {
+    async getCoordinates() {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${this.address}&key=AIzaSyD35FhJYub5b9tpvWLc0csJil3oyuqgjNc`
+      );
+
+      this.longitude = response.data.results[0].geometry.location.lng;
+      this.latitude = response.data.results[0].geometry.location.lat;
+
+      await axios.post("/api/coordinates", {
+        longitude: this.longitude,
+        latitude: this.latitude,
+      });
+    },
+  },
+};
+</script>
+
+<script setup>
+const castRangeToNumber = (node) => {
+  if (node.props.type !== "range") return;
+
+  node.hook.input((value, next) => next(Number(value)));
+};
+
+const calculatePrice = async (fields) => {
+  await new Promise((r) => setTimeout(r, 1000));
+  alert(JSON.stringify(fields));
+};
+</script>
+
+<style>
+button {
+  color: rgb(0, 0, 0);
+  background-color: rgb(178, 238, 150);
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 16px !important;
+  padding: 9px 13px;
+  vertical-align: middle;
+  overflow: hidden;
+  border-radius: 40px;
+  margin-left: 280px;
+}
+
+h1 {
+  font-family: var(--fk-font-family-label);
+}
+
+img {
+  padding-top: 25px;
+  margin-right: 750px;
+  margin-left: 1210px;
+  border-radius: 60px;
+  margin-top: -400px;
+  min-width: 0;
+  padding-left: 100px;
+}
+
+.jumbotron {
+  padding-top: 25px;
+  margin-right: 750px;
+  margin-left: 120px;
+  border-radius: 60px;
+  margin-top: 100px;
+  min-width: 0;
+  padding-left: 100px;
+}
+
+.element3 {
+  padding-top: 45px;
+  margin-right: 120px;
+  margin-left: 120px;
+  border-radius: 60px;
+  margin-top: 400px;
+  min-width: 0;
+  padding-left: 100px;
+  border-top: 2px;
+  border-top-style: solid;
+  border-bottom: 2px;
+  border-bottom-style: solid;
+  border-left: 2px;
+  border-left-style: solid;
+  border-right: 2px;
+  border-right-style: solid;
+}
+
+.btn {
+  color: rgb(0, 0, 0);
+  background-color: #dae6ff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 16px !important;
+  padding: 9px 13px;
+  vertical-align: middle;
+  overflow: hidden;
+  border-radius: 40px;
+  margin-top: 20px;
+  margin-left: -5px;
+  border-color: #92b3f8;
+  --bs-btn-hover-border-color: #f95551;
+}
+
+.btn:hover {
+  color: var(--bs-btn-hover-color);
+  background-color: #f95551;
+  border-color: var(--bs-btn-hover-border-color);
+}
+
+:root {
+  --fk-color-primary: rgb(178, 238, 150) !important;
+  --fk-color-button: rgb(0, 0, 0) !important;
+  --fk-bg-submit-hover: rgb(99, 175, 64) !important;
+  border-radius: 40px;
+}
+</style>
