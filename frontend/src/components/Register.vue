@@ -7,7 +7,7 @@
       <FormKit
         type="form"
         class="register-form"
-        @submit.prevent="handleSubmit"
+        @submit="handleSubmit"
       >
         <FormKit
           name="username"
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "Register",
   components: {
@@ -60,7 +62,7 @@ export default {
   methods: {
     async handleSubmit() {
       try {
-        const response = await axios.post('/api/register', this.form)
+        const response = await axios.post('https://8092-163-5-23-68.eu.ngrok.io/register', this.form)
         // Handle successful registration
         this.form = { username: '', email: '', password: '' }
       } catch (error) {

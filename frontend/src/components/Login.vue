@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "Login",
   components: {},
@@ -46,7 +48,7 @@ export default {
     submitHandler() {
       // Send a POST request to the backend
       axios
-        .post("/api/login", this.formData)
+        .post("https://8092-163-5-23-68.eu.ngrok.io/login", this.formData)
         .then((response) => {
           // Handle successful login
         })

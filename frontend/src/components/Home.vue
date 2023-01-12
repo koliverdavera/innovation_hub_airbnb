@@ -29,7 +29,7 @@
         <FormKit
           type="form"
           name="calc"
-          @submit="calculatePrice"
+          @submit="getCoordinates"
           :plugins="[castRangeToNumber]"
           submit-label="Calculate"
           :submit-attrs="{
@@ -218,7 +218,7 @@
 </template>
 
 <script>
-import Map from "./Map.vue";
+import axios from "axios";
 
 export default {
   name: "Home",
@@ -235,7 +235,7 @@ export default {
       amenities: "",
       minimum_nights: "",
       maximum_nights: "",
-      
+
     };
   },
   methods: {
@@ -247,27 +247,23 @@ export default {
       this.longitude = response.data.results[0].geometry.location.lng;
       this.latitude = response.data.results[0].geometry.location.lat;
 
-      await axios.post("/api/coordinates", {
+      await axios.post("https://8092-163-5-23-68.eu.ngrok.io/calculator", {
         longitude: this.longitude,
         latitude: this.latitude,
+        bedrooms: this.bedrooms,
+        bathrooms: this.bathrooms,
+        accomodates: this.accomodates,
+        room_type: this.room_type,
+        property_type: this.property_type,
+        amenities: this.amenities,
+        minimum_nights: this.minimum_nights,
+        maximum_nights: this.maximum_nights,
       });
     },
   },
 };
 </script>
 
-<script setup>
-const castRangeToNumber = (node) => {
-  if (node.props.type !== "range") return;
-
-  node.hook.input((value, next) => next(Number(value)));
-};
-
-const calculatePrice = async (fields) => {
-  await new Promise((r) => setTimeout(r, 1000));
-  alert(JSON.stringify(fields));
-};
-</script>
 
 <style>
 button {
