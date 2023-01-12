@@ -29,8 +29,7 @@
         <FormKit
           type="form"
           name="calc"
-          @submit="getCoordinates"
-          :plugins="[castRangeToNumber]"
+          @submit="getCoordinates"    
           submit-label="Calculate"
           :submit-attrs="{
             'suffix-icon': 'submit',
