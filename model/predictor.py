@@ -1,8 +1,39 @@
+import os
+import sys
+
 import pandas as pd
 import numpy as np
 from xgboost import XGBRegressor
 from pickle import load
-from codings import *
+import sklearn
+# from codings import numerical, categorical, bins, amenities
+
+numerical = (
+     "host_is_superhost",
+     "host_total_listings_count",
+     'latitude',
+     'longitude', 'accommodates', 'bathrooms', 'minimum_nights',
+     'maximum_nights', 'availability_90', 'number_of_reviews',
+     'review_scores_accuracy', 'calculated_host_listings_count'
+)
+categorical = (
+    "host_response_time",
+    "neighbourhood",
+    "property_type",
+    "room_type",
+    "time_since_first_review",
+    "time_since_last_review"
+)
+bins = (
+    "review_scores_rating",
+    "time_since_first_review",
+    "time_since_last_review"
+)
+amenities = (
+    'air_conditioning', 'bed_linen', 'tv', 'coffee_machine',
+    'cooking_basics', 'white_goods', 'elevator', 'parking',
+    'host_greeting', 'internet', 'long_term_stays', 'private_entrance'
+)
 
 
 def get_time_since_first_review(days: int) -> str:
@@ -41,11 +72,13 @@ def preprocess_request(params: dict,
     """
     model = XGBRegressor()
     model.load_model(model_name)
-    result = pd.DataFrame(data=np.zeros(len(model.feature_names_in_)),
+    result = pd.DataFrame(np.zeros((1, len(model.feature_names_in_))),
                           columns=model.feature_names_in_)
     for feature, value in params.items():
-        if feature in numerical or feature in amenities:
-            result[feature][0] = value
+        if feature == "accomodates":
+            feature = "accommodates"
+        if feature in numerical:
+            result[feature][0] = float(value)
         if feature in categorical:
             col_name = f"{feature}_{value}"
             result[col_name][0] = 1
@@ -57,6 +90,10 @@ def preprocess_request(params: dict,
             else:
                 if value < 80:
                     result["review_scores_rating_0-79/100"] = 1
+        if type(value) == list:
+            for elem in value:
+                if elem in amenities:
+                    result[elem][0] = 1
     if feature_scaler_name:
         feature_scaler_ = load(open(feature_scaler_name, 'rb'))
         result = feature_scaler_.transform(result)
@@ -84,10 +121,11 @@ def get_prediction(params: dict) -> float:
     :param params: a dictionary containing all features for prediction (as described in Notion)
     :return: price prediction
     """
+    print(os.listdir())
     obj = preprocess_request(params,
-                             model_name="airbnb_predictor.json",
-                             feature_scaler_name="feature_scaler.pkl")
+                             model_name="../model/trained_objects/airbnb_predictor.json",
+                             feature_scaler_name="../model/trained_objects/feature_scaler.pkl")
     price = _predict(obj,
-                     model_name="airbnb_predictor.json",
-                     target_scaler_name="target_scaler.pkl")
+                     model_name='../model/trained_objects/airbnb_predictor.json',
+                     target_scaler_name="../model/trained_objects/target_scaler.pkl")
     return price

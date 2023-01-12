@@ -1,20 +1,20 @@
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
-# from data import Articles
+from flask import flash, redirect, url_for, session
+from flask import request
 from flask import Flask
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from flask_mysqldb import MySQL
-# from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from functools import wraps
+from model.predictor import get_prediction
 
 app = Flask(__name__)
 Cors = CORS(app)
-CORS(app, resources={r'/*': {'origins': '*'}},CORS_SUPPORTS_CREDENTIALS = True)
+CORS(app, resources={r'/*': {'origins': '*'}}, CORS_SUPPORTS_CREDENTIALS=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'hub_db'
-app.config['MYSQL_PASSWORD'] = '1208'
+app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'hub_db'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
@@ -31,34 +31,39 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def sign_up():
     # TODO: check user input
-    username, password, email = request.json.get('username', ''), \
-                                request.json.get('password', ''), request.json.get('email', '')
+    username = request.json["username"]
+    email = request.json["email"]
+    password = request.json["password"]
 
     if len(email) == 0 or len(password) == 0 or len(email) == 0:
         return 'Some credentials are missing.'
 
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO user(email, username, password) VALUES( %s, %s, %s)", (email, username, password))
+    cur.execute("INSERT INTO user(email, username, password) "
+                "VALUES( %s, %s, %s)",
+                (email, username, password))
     mysql.connection.commit()
     cur.close()
     return "success"
 
 
 # User login
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
+    print(request.method)
     if request.method == 'POST':
+        print("got inside post")
         # Get Form Fields
         # username = request.form['username']
         # password_candidate = request.form['password']
-        username, password_candidate = request.json.get('username', ''), request.json.get('password', '')
+        username = request.json["username"]
+        password_candidate = request.json["password"]
 
-        # Create cursor
         cur = mysql.connection.cursor()
-
         # Get user by username
-        result = cur.execute("SELECT * FROM user WHERE username = %s", [username])
-
+        result = cur.execute("SELECT * FROM user "
+                             "WHERE username = %s", [username])
+        print(result)
         if result > 0:
             # Get stored hash
             data = cur.fetchone()
@@ -70,20 +75,16 @@ def login():
                 # Passed
                 session['logged_in'] = True
                 session['username'] = username
-
-                # flash('You are now logged in', 'success')
-                ret = 'You are now logged in', 'success'
+                ret = 'You are now logged in'
             else:
-                error = 'Invalid login'
-                ret = render_template('login.html', error=error)
+                error = 'Invalid password'
+                ret = error
             # Close connection
             cur.close()
             return ret
         else:
             error = 'Username not found'
-            return render_template('login.html', error=error)
-
-    return render_template('login.html')
+            return error
 
 
 # Check if user logged in
@@ -99,6 +100,14 @@ def is_logged_in(f):
     return wrap
 
 
+@app.route('/calculator', methods=['POST', 'GET'])
+# @is_logged_in
+def calculator() -> str:
+    params = request.json
+    prediction = get_prediction(params)
+    return str(prediction)
+
+
 # Logout
 @app.route('/logout')
 @is_logged_in
@@ -109,7 +118,6 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.template_folder = 'backend/templates'
+    # app.debug = True
     app.secret_key = 'secret123'
-    app.run(host='127.0.0.1', ssl_context="adhoc", port=7779)
+    app.run(host='127.0.0.1', ssl_context="adhoc", port=1234)
