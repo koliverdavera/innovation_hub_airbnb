@@ -1,11 +1,15 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
 # from data import Articles
 from flask import Flask
+from flask_cors import CORS, cross_origin
 from flask_mysqldb import MySQL
 # from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from functools import wraps
 
 app = Flask(__name__)
+Cors = CORS(app)
+CORS(app, resources={r'/*': {'origins': '*'}},CORS_SUPPORTS_CREDENTIALS = True)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
@@ -108,4 +112,4 @@ if __name__ == '__main__':
     app.debug = True
     app.template_folder = 'backend/templates'
     app.secret_key = 'secret123'
-    app.run(host='0.0.0.0', ssl_context=('../cert.pem', '../key.pem'), port=7779)
+    app.run(host='127.0.0.1', ssl_context="adhoc", port=7779)
