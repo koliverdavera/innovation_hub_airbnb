@@ -17,12 +17,10 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 
-# Articles = Articles()
-
 # Index
 @app.route('/')
 def index():
-    return "Hello world!"
+    return "Airbnb calculator"
 
 
 # User Register
@@ -36,13 +34,9 @@ def sign_up():
         return 'Some credentials are missing.'
 
     cur = mysql.connection.cursor()
-
     cur.execute("INSERT INTO user(email, username, password) VALUES( %s, %s, %s)", (email, username, password))
-
     mysql.connection.commit()
-
     cur.close()
-
     return "success"
 
 
@@ -74,12 +68,13 @@ def login():
                 session['username'] = username
 
                 # flash('You are now logged in', 'success')
-                return 'You are now logged in', 'success'
+                ret = 'You are now logged in', 'success'
             else:
                 error = 'Invalid login'
-                return render_template('login.html', error=error)
+                ret = render_template('login.html', error=error)
             # Close connection
             cur.close()
+            return ret
         else:
             error = 'Username not found'
             return render_template('login.html', error=error)
@@ -111,5 +106,6 @@ def logout():
 
 if __name__ == '__main__':
     app.debug = True
+    app.template_folder = 'backend/templates'
     app.secret_key = 'secret123'
-    app.run(host='0.0.0.0', ssl_context="adhoc", port=8000)
+    app.run(host='0.0.0.0', ssl_context=('../cert.pem', '../key.pem'), port=7779)
