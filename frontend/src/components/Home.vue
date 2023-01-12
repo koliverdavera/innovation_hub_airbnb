@@ -209,7 +209,6 @@
             v-model="maximum_nights"
           />
           <br />
-          <pre wrap>{{ value }}</pre>
         </FormKit>
       </div>
     </fieldset>
