@@ -50,12 +50,7 @@ def sign_up():
 # User login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    print(request.method)
     if request.method == 'POST':
-        print("got inside post")
-        # Get Form Fields
-        # username = request.form['username']
-        # password_candidate = request.form['password']
         username = request.json["username"]
         password_candidate = request.json["password"]
 
@@ -63,7 +58,7 @@ def login():
         # Get user by username
         result = cur.execute("SELECT * FROM user "
                              "WHERE username = %s", [username])
-        print(result)
+
         if result > 0:
             # Get stored hash
             data = cur.fetchone()
@@ -77,8 +72,7 @@ def login():
                 session['username'] = username
                 ret = 'You are now logged in'
             else:
-                error = 'Invalid password'
-                ret = error
+                ret = 'Invalid password'
             # Close connection
             cur.close()
             return ret
@@ -118,6 +112,6 @@ def logout():
 
 
 if __name__ == '__main__':
-    # app.debug = True
+    app.debug = True
     app.secret_key = 'secret123'
     app.run(host='127.0.0.1', ssl_context="adhoc", port=1234)
