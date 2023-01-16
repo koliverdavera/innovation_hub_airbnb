@@ -5,11 +5,7 @@
       <br />
       <br />
 
-      <FormKit
-        class="login-form"
-        type="form"
-        @submit="submitHandler"
-      >
+      <FormKit class="login-form" type="form" @submit="submitHandler">
         <FormKit
           name="username"
           label="Username"
@@ -31,7 +27,9 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+import { createToaster } from "@meforma/vue-toaster";
+const toaster = createToaster();
 
 export default {
   name: "Login",
@@ -48,12 +46,14 @@ export default {
     submitHandler() {
       // Send a POST request to the backend
       axios
-        .post("https://8092-163-5-23-68.eu.ngrok.io/login", this.formData)
+        .post("https://e0d8-163-5-23-68.eu.ngrok.io/login", this.formData)
         .then((response) => {
           // Handle successful login
+          response = this.$toast.success(`You've successfully logged in!`);
         })
         .catch((error) => {
           // Handle login failure
+          error = this.$toast.error(`Failure, check your information again`);
         });
     },
   },

@@ -4,17 +4,13 @@
       <h1 class="Register">Make an account</h1>
       <br />
       <br />
-      <FormKit
-        type="form"
-        class="register-form"
-        @submit="handleSubmit"
-      >
+      <FormKit type="form" class="register-form" @submit="handleSubmit">
         <FormKit
           name="username"
           label="Create Username"
           validation="required|username"
           v-model="form.username"
-          :errors="errors.username" 
+          :errors="errors.username"
         />
         <FormKit
           type="email"
@@ -22,7 +18,7 @@
           label="Email address"
           validation="required|email"
           v-model="form.email"
-          :errors="errors.email" 
+          :errors="errors.email"
         />
         <FormKit
           type="password"
@@ -30,7 +26,7 @@
           label="Create Password"
           validation="required"
           v-model="form.password"
-          :errors="errors.password" 
+          :errors="errors.password"
         />
       </FormKit>
     </fieldset>
@@ -38,41 +34,45 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+import { createToaster } from "@meforma/vue-toaster";
+const toaster = createToaster();
 
 export default {
   name: "Register",
-  components: {
-  
-  },
+  components: {},
   data() {
     return {
       form: {
-        username: '',
-        email: '',
-        password: '',
+        username: "",
+        email: "",
+        password: "",
       },
       errors: {
         username: [],
         email: [],
         password: [],
       },
-    }
+    };
   },
   methods: {
     async handleSubmit() {
       try {
-        const response = await axios.post('https://8092-163-5-23-68.eu.ngrok.io/register', this.form)
+        const response = await axios.post(
+          "https://8092-163-5-23-68.eu.ngrok.io/register",
+          this.form
+        );
+        this.$toast.success(`You've successfully made an account!`);
         // Handle successful registration
-        this.form = { username: '', email: '', password: '' }
+        this.form = { username: "", email: "", password: "" };
       } catch (error) {
-        this.errors = error.response.data.errors
+        this.errors = error.response.data.errors;
+        error = this.$toast.error(`Failure, check your information again`);
       }
     },
   },
-}
+};
 </script>
-
 
 <style>
 .input {
