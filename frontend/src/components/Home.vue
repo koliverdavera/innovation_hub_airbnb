@@ -18,6 +18,7 @@
     <img
       name="pic1"
       height="350px"
+      id="image_home"
       width="600px"
       src="../../public/exchangeHouseMoney.webp"
     />
@@ -213,7 +214,8 @@
             name="calculation"
             id="calculation"
             label="Calculated price:"
-            v-model="calculation"
+            v-model="calculated_price"
+            placeholder="€0"
             readonly
           />
         </FormKit>
@@ -227,7 +229,6 @@ import axios from "axios";
 import { createToaster } from "@meforma/vue-toaster";
 const toaster = createToaster();
 toaster.show("Make an account to use the calculator!");
-
 export default {
   name: "Home",
   data() {
@@ -243,19 +244,19 @@ export default {
       amenities: "",
       minimum_nights: "",
       maximum_nights: "",
+      calculated_price: 0
     };
   },
   methods: {
     async getCoordinates() {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${this.address}&key=AIzaSyD35FhJYub5b9tpvWLc0csJil3oyuqgjNc`
-      );
-
-      this.longitude = response.data.results[0].geometry.location.lng;
-      this.latitude = response.data.results[0].geometry.location.lat;
-
-      await axios
-        .post("https://e0d8-163-5-23-68.eu.ngrok.io/calculator", {
+      this.isLoading = true;
+      try {
+        const response = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${this.address}&key=AIzaSyD35FhJYub5b9tpvWLc0csJil3oyuqgjNc`
+        );
+        this.longitude = response.data.results[0].geometry.location.lng;
+        this.latitude = response.data.results[0].geometry.location.lat;
+        const calculated_response = await axios.post("https://691a-163-5-23-68.eu.ngrok.io/calculator", {
           longitude: this.longitude,
           latitude: this.latitude,
           bedrooms: this.bedrooms,
@@ -266,15 +267,13 @@ export default {
           amenities: this.amenities,
           minimum_nights: this.minimum_nights,
           maximum_nights: this.maximum_nights,
-        })
-        .then((response) => {
-          // Handle success
-          response = this.$toast.success(`Data has been sent!`);
-        })
-        .catch((error) => {
-          // Handle failure
-          error = this.$toast.error(`Failure, check if you are logged in!`);
         });
+        this.calculated_price = `€ ${calculated_response.data}`;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };
@@ -284,7 +283,6 @@ export default {
 #calculation.formkit-input {
   display: inline-flex !important;
 }
-
 button {
   color: rgb(0, 0, 0);
   background-color: rgb(178, 238, 150);
@@ -299,21 +297,18 @@ button {
   border-radius: 40px;
   margin-left: 280px;
 }
-
 h1 {
   font-family: var(--fk-font-family-label);
 }
-
-img {
-  padding-top: 25px;
-  margin-right: 750px;
-  margin-left: 1210px;
-  border-radius: 60px;
-  margin-top: -400px;
-  min-width: 0;
-  padding-left: 100px;
+#image_home {
+  padding-top: 25px !important;
+  margin-right: 750px !important;
+  margin-left: 1210px !important;
+  border-radius: 60px !important;
+  margin-top: -400px !important;
+  min-width: 0 !important;
+  padding-left: 100px !important;
 }
-
 .jumbotron {
   padding-top: 25px;
   margin-right: 750px;
@@ -323,7 +318,6 @@ img {
   min-width: 0;
   padding-left: 100px;
 }
-
 .element3 {
   padding-top: 45px;
   margin-right: 120px;
@@ -341,7 +335,6 @@ img {
   border-right: 2px;
   border-right-style: solid;
 }
-
 .btn {
   color: rgb(0, 0, 0);
   background-color: #dae6ff;
@@ -359,13 +352,11 @@ img {
   border-color: #92b3f8;
   --bs-btn-hover-border-color: #f95551;
 }
-
 .btn:hover {
   color: var(--bs-btn-hover-color);
   background-color: #f95551;
   border-color: var(--bs-btn-hover-border-color);
 }
-
 :root {
   --fk-color-primary: rgb(178, 238, 150) !important;
   --fk-color-button: rgb(0, 0, 0) !important;

@@ -22,6 +22,9 @@
           :rules="[(val) => !!val || 'Password is required']"
         />
       </FormKit>
+      <p class="register-text" @click="goToRegister">
+        Don't have an account? Register here
+      </p>
     </fieldset>
   </main>
 </template>
@@ -29,7 +32,6 @@
 <script>
 import axios from "axios";
 import { createToaster } from "@meforma/vue-toaster";
-const toaster = createToaster();
 
 export default {
   name: "Login",
@@ -39,22 +41,37 @@ export default {
       formData: {
         username: "",
         password: "",
+        feedback: "",
       },
+      $toast: createToaster(),
     };
   },
   methods: {
     submitHandler() {
-      // Send a POST request to the backend
       axios
-        .post("https://e0d8-163-5-23-68.eu.ngrok.io/login", this.formData)
+        .post(
+          "https://e2d3-2a01-e0a-585-d830-9543-2e12-101d-1f88.eu.ngrok.io/login",
+          this.formData
+        )
         .then((response) => {
-          // Handle successful login
-          response = this.$toast.success(`You've successfully logged in!`);
+          if (response.data.feedback === "successful login") {
+            // Handle successful login
+            this.user = response.data.user;
+            this.isLoggedIn = true;
+            this.$toast.success(`You've successfully logged in!`);
+            // Redirect the user to the home page or any other page
+            this.$router.push({ name: "Home" });
+          } else {
+            throw new Error("Invalid email or password");
+          }
         })
         .catch((error) => {
-          // Handle login failure
-          error = this.$toast.error(`Failure, check your information again`);
+          this.error = error.message;
+          this.$toast.error(this.error);
         });
+    },
+    goToRegister() {
+      this.$router.push({ name: "Register" });
     },
   },
 };
@@ -74,6 +91,12 @@ export default {
   overflow: hidden;
   border-radius: 40px;
   margin-left: 135px;
+}
+
+.register-text {
+  color: rgb(101, 214, 49);
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 fieldset {

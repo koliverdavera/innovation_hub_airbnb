@@ -36,7 +36,6 @@
 <script>
 import axios from "axios";
 import { createToaster } from "@meforma/vue-toaster";
-const toaster = createToaster();
 
 export default {
   name: "Register",
@@ -53,18 +52,26 @@ export default {
         email: [],
         password: [],
       },
+      $toast: createToaster(),
     };
   },
   methods: {
     async handleSubmit() {
       try {
         const response = await axios.post(
-          "https://8092-163-5-23-68.eu.ngrok.io/register",
+          "https://e2d3-2a01-e0a-585-d830-9543-2e12-101d-1f88.eu.ngrok.io/register",
           this.form
         );
-        this.$toast.success(`You've successfully made an account!`);
-        // Handle successful registration
-        this.form = { username: "", email: "", password: "" };
+        if (response.data.feedback === "successful registration") {
+          this.$toast.success(`You've successfully made an account!`);
+          // Handle successful registration
+          this.form = { username: "", email: "", password: "" };
+          this.$router.push({ name: "login" });
+        } else {
+          throw new Error(
+            "Failed to register, please check your information again"
+          );
+        }
       } catch (error) {
         this.errors = error.response.data.errors;
         error = this.$toast.error(`Failure, check your information again`);
