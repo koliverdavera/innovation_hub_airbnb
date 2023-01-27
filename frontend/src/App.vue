@@ -3,6 +3,8 @@ import { RouterLink, RouterView } from "vue-router";
 import Login from "./components/Login.vue";
 import Home from "./components/Home.vue";
 import Register from "./components/Register.vue";
+import About from "./components/About.vue";
+
 
 export default {
   name: "App",
@@ -10,6 +12,7 @@ export default {
     Home,
     Login,
     Register,
+    About,
   },
 };
 </script>
@@ -39,7 +42,7 @@ export default {
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" id="border3" href="#">About us</a>
+              <router-link class="nav-link about" to="/About"> About Us </router-link>
             </li>
           </ul>
         </div>
@@ -78,7 +81,7 @@ export default {
       <div class="col-1">
         <h4>Useful Links</h4>
         <router-link class="special" to="/"> Home </router-link>
-        <a class="special" href="#">About us</a>
+        <router-link class="special" to="/About">About us</router-link>
         <router-link class="special" to="/Login"> Login </router-link>
         <router-link class="special" to="/Register"> Register </router-link>
       </div>
@@ -121,6 +124,11 @@ export default {
 }
 .col-2 {
   flex-grow: 2;
+}
+
+.about {
+  margin-left: 3px !important;
+  margin-top: 3px !important;
 }
 
 .footer div h4 {
