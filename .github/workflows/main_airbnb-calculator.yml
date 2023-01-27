@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -29,9 +29,10 @@ jobs:
       
       - name: Install dependencies
         run: |
-          brew install mysql
-          export PATH=$PATH:/usr/local/mysql/bin
-          pip3 install mysqlclient
+          brew install libpython3.10-dev
+          brew install libssl-dev
+          brew install python3-pymysql
+          brew install default-libmysqlclient-dev
           pip3 install -r requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
