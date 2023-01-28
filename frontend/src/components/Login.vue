@@ -58,16 +58,20 @@ export default {
             // Handle successful login
             this.isLoggedIn = true;
             window.alert("You've successfully logged in!");
-            this.$router.push({ name: 'Home' })
+            this.$router.push({ name: "Home" });
 
             // Redirect the user to the home page or any other page
           } else {
-            throw new Error("Invalid email or password");
+            window.alert("Invalid email or password!");
+
           }
         })
         .catch((error) => {
           this.error = error.message;
         });
+    },
+    goToRegister() {
+      this.$router.push({ name: "Register" });
     },
   },
 };
