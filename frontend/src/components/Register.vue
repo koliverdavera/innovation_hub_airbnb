@@ -52,21 +52,20 @@ export default {
         email: [],
         password: [],
       },
-      $toast: createToaster(),
     };
   },
   methods: {
     async handleSubmit() {
       try {
         const response = await axios.post(
-          "https://e2d3-2a01-e0a-585-d830-9543-2e12-101d-1f88.eu.ngrok.io/register",
+          "https://ac40-2a01-e0a-585-d830-d0ab-574e-7d8c-ff73.eu.ngrok.io/register",
           this.form
         );
-        if (response.data.feedback === "successful registration") {
-          this.$toast.success(`You've successfully made an account!`);
-          // Handle successful registration
+        if (response.data === "success") {
           this.form = { username: "", email: "", password: "" };
-          this.$router.push({ name: "login" });
+          window.alert(`You've successfully made an account!`);
+          this.$router.push({ name: 'Home' })
+
         } else {
           throw new Error(
             "Failed to register, please check your information again"
@@ -74,7 +73,7 @@ export default {
         }
       } catch (error) {
         this.errors = error.response.data.errors;
-        error = this.$toast.error(`Failure, check your information again`);
+        window.alert(`Failure, check your information again`);
       }
     },
   },

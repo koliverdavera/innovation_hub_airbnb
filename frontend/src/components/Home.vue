@@ -118,106 +118,108 @@
             v-model="room_type"
           />
           <br />
-          <FormKit
-            type="checkbox"
-            name="amenities"
-            id="amenities"
-            placeholder="Select amenities"
-            :options="[
-              {
-                value: 'air_conditioning',
-                label: 'Air conditioning',
-              },
-              {
-                value: 'bed_linen',
-                label: 'Bed linen',
-              },
-              {
-                value: 'tv',
-                label: 'Television',
-              },
-              {
-                value: 'coffee_machine',
-                label: 'Coffee machine',
-              },
-              {
-                value: 'cooking_basics',
-                label: 'Cooking utensils',
-              },
-              {
-                value: 'white_goods',
-                label: 'White goods',
-              },
-              {
-                value: 'elevator',
-                label: 'Elevator',
-              },
-              {
-                value: 'parking',
-                label: 'Parking',
-              },
-              {
-                value: 'host_greeting',
-                label: 'Host greeting',
-              },
-              {
-                value: 'internet',
-                label: 'Internet',
-              },
-              {
-                value: 'long_term_stays',
-                label: 'Long term stays',
-              },
-              {
-                value: 'private_entrance',
-                label: 'Private entrance',
-              },
-              {
-                value: 'other',
-                label: 'Other',
-              },
-            ]"
-            label="Amenities"
-            v-model="amenities"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="accomodates"
-            id="accomodates"
-            validation="required"
-            label="Number of Accomodates"
-            help="Enter the number of accomodates"
-            v-model="accomodates"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="minimum_nights"
-            id="minimum_nights"
-            validation="required"
-            label="Number of Minimum nights"
-            v-model="minimum_nights"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="maximum_nights"
-            id="maximum_nights"
-            validation="required"
-            label="Number of Maximum nights"
-            v-model="maximum_nights"
-          />
-          <br />
-          <FormKit
-            type="text"
-            name="calculation"
-            id="calculation"
-            label="Calculated price:"
-            v-model="calculated_price"
-            placeholder="€0"
-            readonly
-          />
+          <div id="second">
+            <FormKit
+              type="checkbox"
+              name="amenities"
+              id="amenities"
+              placeholder="Select amenities"
+              :options="[
+                {
+                  value: 'air_conditioning',
+                  label: 'Air conditioning',
+                },
+                {
+                  value: 'bed_linen',
+                  label: 'Bed linen',
+                },
+                {
+                  value: 'tv',
+                  label: 'Television',
+                },
+                {
+                  value: 'coffee_machine',
+                  label: 'Coffee machine',
+                },
+                {
+                  value: 'cooking_basics',
+                  label: 'Cooking utensils',
+                },
+                {
+                  value: 'white_goods',
+                  label: 'White goods',
+                },
+                {
+                  value: 'elevator',
+                  label: 'Elevator',
+                },
+                {
+                  value: 'parking',
+                  label: 'Parking',
+                },
+                {
+                  value: 'host_greeting',
+                  label: 'Host greeting',
+                },
+                {
+                  value: 'internet',
+                  label: 'Internet',
+                },
+                {
+                  value: 'long_term_stays',
+                  label: 'Long term stays',
+                },
+                {
+                  value: 'private_entrance',
+                  label: 'Private entrance',
+                },
+                {
+                  value: 'other',
+                  label: 'Other',
+                },
+              ]"
+              label="Amenities"
+              v-model="amenities"
+            />
+            <br />
+            <FormKit
+              type="number"
+              name="accomodates"
+              id="accomodates"
+              validation="required"
+              label="Number of Accomodates"
+              help="Enter the number of accomodates"
+              v-model="accomodates"
+            />
+            <br />
+            <FormKit
+              type="number"
+              name="minimum_nights"
+              id="minimum_nights"
+              validation="required"
+              label="Number of Minimum nights"
+              v-model="minimum_nights"
+            />
+            <br />
+            <FormKit
+              type="number"
+              name="maximum_nights"
+              id="maximum_nights"
+              validation="required"
+              label="Number of Maximum nights"
+              v-model="maximum_nights"
+            />
+            <br />
+            <FormKit
+              type="text"
+              name="calculation"
+              id="calculation"
+              label="Calculated price:"
+              v-model="calculated_price"
+              placeholder="€0"
+              readonly
+            />
+          </div>
         </FormKit>
       </div>
     </fieldset>
@@ -244,7 +246,7 @@ export default {
       amenities: "",
       minimum_nights: "",
       maximum_nights: "",
-      calculated_price: 0
+      calculated_price: 0,
     };
   },
   methods: {
@@ -256,18 +258,21 @@ export default {
         );
         this.longitude = response.data.results[0].geometry.location.lng;
         this.latitude = response.data.results[0].geometry.location.lat;
-        const calculated_response = await axios.post("https://691a-163-5-23-68.eu.ngrok.io/calculator", {
-          longitude: this.longitude,
-          latitude: this.latitude,
-          bedrooms: this.bedrooms,
-          bathrooms: this.bathrooms,
-          accomodates: this.accomodates,
-          room_type: this.room_type,
-          property_type: this.property_type,
-          amenities: this.amenities,
-          minimum_nights: this.minimum_nights,
-          maximum_nights: this.maximum_nights,
-        });
+        const calculated_response = await axios.post(
+          "https://ac40-2a01-e0a-585-d830-d0ab-574e-7d8c-ff73.eu.ngrok.io/calculator",
+          {
+            longitude: this.longitude,
+            latitude: this.latitude,
+            bedrooms: this.bedrooms,
+            bathrooms: this.bathrooms,
+            accomodates: this.accomodates,
+            room_type: this.room_type,
+            property_type: this.property_type,
+            amenities: this.amenities,
+            minimum_nights: this.minimum_nights,
+            maximum_nights: this.maximum_nights,
+          }
+        );
         this.calculated_price = `€ ${calculated_response.data}`;
       } catch (error) {
         console.error(error);
@@ -362,5 +367,8 @@ h1 {
   --fk-color-button: rgb(0, 0, 0) !important;
   --fk-bg-submit-hover: rgb(99, 175, 64) !important;
   border-radius: 40px;
+}
+
+#second {
 }
 </style>
