@@ -121,4 +121,8 @@ h1 {
   margin-right: 700px;
   margin-left: 600px;
 }
+
+.Register {
+  margin-left: 50px !important;
+}
 </style>
