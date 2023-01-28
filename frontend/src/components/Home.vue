@@ -23,205 +23,200 @@
       src="../../public/exchangeHouseMoney.webp"
     />
     <fieldset name="calculator" id="here" class="element3">
-      <h1 class="calc_title">Calculator</h1>
+      <h1 class="calc_title">Airbnb Calculator</h1>
       <br />
       <br />
-      <div class="col-6">
+      <FormKit
+        type="form"
+        name="calc"
+        @submit="getCoordinates"
+        submit-label="Calculate"
+        :submit-attrs="{
+          'suffix-icon': 'submit',
+        }"
+        #default="{ value }"
+      >
         <FormKit
-          type="form"
-          name="calc"
-          @submit="getCoordinates"
-          submit-label="Calculate"
-          :submit-attrs="{
-            'suffix-icon': 'submit',
-          }"
-          #default="{ value }"
-        >
+          type="text"
+          name="address"
+          id="address"
+          class="input" 
+          validation="required"
+          label="Address"
+          help="Enter the location of the rental place"
+          placeholder="77 rue La Boétie, Paris, 75015"
+          v-model="address"
+        />
+        <input v-model="longitude" type="hidden" validation-visibility="live" />
+        <input v-model="latitude" type="hidden" validation-visibility="live" />
+        <br />
+        <FormKit
+          type="number"
+          name="bedrooms"
+          id="bedrooms"
+          class="input" 
+          label="Bedrooms"
+          validation="required"
+          validation-visibility="live"
+          help="How many bedrooms does the rental place have?"
+          v-model="bedrooms"
+        />
+        <br />
+        <FormKit
+          type="number"
+          name="bathrooms"
+          id="bathrooms"
+          class="input" 
+          label="Bathrooms"
+          validation="required"
+          validation-visibility="live"
+          help="How many bathrooms does the rental place have?"
+          v-model="bathrooms"
+        />
+        <br />
+        <FormKit
+          type="select"
+          name="propertyType"
+          class="input" 
+          id="propertyType"
+          placeholder="Select a type"
+          :options="[
+            'Entire rental unit',
+            'Private room in rental unit',
+            'Entire condo',
+            'Room in boutique hotel',
+            'Room in hotel',
+            'Entire loft',
+            'Entire home',
+            'Private room in condo',
+            'Entire townhouse',
+            'Shared room in rental unit',
+          ]"
+          validation="required"
+          label="Property Type"
+          v-model="property_type"
+        />
+        <br />
+        <FormKit
+          type="select"
+          name="roomType"
+          id="roomType"
+          class="input" 
+          placeholder="Select a type"
+          :options="[
+            'Entire home/apt',
+            'Private room',
+            'Hotel room',
+            'Shared room',
+          ]"
+          validation="required"
+          label="Room Type"
+          v-model="room_type"
+        />
+        <br />
+          <FormKit
+            type="checkbox"
+            name="amenities"
+            id="amenities"
+            placeholder="Select amenities"
+            :options="[
+              {
+                value: 'air_conditioning',
+                label: 'Air conditioning',
+              },
+              {
+                value: 'bed_linen',
+                label: 'Bed linen',
+              },
+              {
+                value: 'tv',
+                label: 'Television',
+              },
+              {
+                value: 'coffee_machine',
+                label: 'Coffee machine',
+              },
+              {
+                value: 'cooking_basics',
+                label: 'Cooking utensils',
+              },
+              {
+                value: 'white_goods',
+                label: 'White goods',
+              },
+              {
+                value: 'elevator',
+                label: 'Elevator',
+              },
+              {
+                value: 'parking',
+                label: 'Parking',
+              },
+              {
+                value: 'host_greeting',
+                label: 'Host greeting',
+              },
+              {
+                value: 'internet',
+                label: 'Internet',
+              },
+              {
+                value: 'long_term_stays',
+                label: 'Long term stays',
+              },
+              {
+                value: 'private_entrance',
+                label: 'Private entrance',
+              },
+              {
+                value: 'other',
+                label: 'Other',
+              },
+            ]"
+            label="Amenities"
+            v-model="amenities"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="accomodates"
+            id="accomodates"
+            validation="required"
+            label="Number of Accomodates"
+            help="Enter the number of accomodates"
+            v-model="accomodates"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="minimum_nights"
+            id="minimum_nights"
+            validation="required"
+            label="Number of Minimum nights"
+            v-model="minimum_nights"
+          />
+          <br />
+          <FormKit
+            type="number"
+            name="maximum_nights"
+            id="maximum_nights"
+            validation="required"
+            label="Number of Maximum nights"
+            v-model="maximum_nights"
+          />
+          <br />
+          <div id="calculated-price">
           <FormKit
             type="text"
-            name="address"
-            id="address"
-            validation="required"
-            label="Address"
-            help="Enter the location of the rental place"
-            placeholder="77 rue La Boétie, Paris, 75015"
-            v-model="address"
+            name="calculation"
+            id="calculation"
+            label="Calculated price:"
+            v-model="calculated_price"
+            placeholder="€0"
+            readonly
           />
-          <input
-            v-model="longitude"
-            type="hidden"
-            validation-visibility="live"
-          />
-          <input
-            v-model="latitude"
-            type="hidden"
-            validation-visibility="live"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="bedrooms"
-            id="bedrooms"
-            label="Bedrooms"
-            validation="required"
-            validation-visibility="live"
-            help="How many bedrooms does the rental place have?"
-            v-model="bedrooms"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="bathrooms"
-            id="bathrooms"
-            label="Bathrooms"
-            validation="required"
-            validation-visibility="live"
-            help="How many bathrooms does the rental place have?"
-            v-model="bathrooms"
-          />
-          <br />
-          <FormKit
-            type="select"
-            name="propertyType"
-            id="propertyType"
-            placeholder="Select a type"
-            :options="[
-              'Entire rental unit',
-              'Private room in rental unit',
-              'Entire condo',
-              'Room in boutique hotel',
-              'Room in hotel',
-              'Entire loft',
-              'Entire home',
-              'Private room in condo',
-              'Entire townhouse',
-              'Shared room in rental unit',
-            ]"
-            validation="required"
-            label="Property Type"
-            v-model="property_type"
-          />
-          <br />
-          <FormKit
-            type="select"
-            name="roomType"
-            id="roomType"
-            placeholder="Select a type"
-            :options="[
-              'Entire home/apt',
-              'Private room',
-              'Hotel room',
-              'Shared room',
-            ]"
-            validation="required"
-            label="Room Type"
-            v-model="room_type"
-          />
-          <br />
-          <div id="second">
-            <FormKit
-              type="checkbox"
-              name="amenities"
-              id="amenities"
-              placeholder="Select amenities"
-              :options="[
-                {
-                  value: 'air_conditioning',
-                  label: 'Air conditioning',
-                },
-                {
-                  value: 'bed_linen',
-                  label: 'Bed linen',
-                },
-                {
-                  value: 'tv',
-                  label: 'Television',
-                },
-                {
-                  value: 'coffee_machine',
-                  label: 'Coffee machine',
-                },
-                {
-                  value: 'cooking_basics',
-                  label: 'Cooking utensils',
-                },
-                {
-                  value: 'white_goods',
-                  label: 'White goods',
-                },
-                {
-                  value: 'elevator',
-                  label: 'Elevator',
-                },
-                {
-                  value: 'parking',
-                  label: 'Parking',
-                },
-                {
-                  value: 'host_greeting',
-                  label: 'Host greeting',
-                },
-                {
-                  value: 'internet',
-                  label: 'Internet',
-                },
-                {
-                  value: 'long_term_stays',
-                  label: 'Long term stays',
-                },
-                {
-                  value: 'private_entrance',
-                  label: 'Private entrance',
-                },
-                {
-                  value: 'other',
-                  label: 'Other',
-                },
-              ]"
-              label="Amenities"
-              v-model="amenities"
-            />
-            <br />
-            <FormKit
-              type="number"
-              name="accomodates"
-              id="accomodates"
-              validation="required"
-              label="Number of Accomodates"
-              help="Enter the number of accomodates"
-              v-model="accomodates"
-            />
-            <br />
-            <FormKit
-              type="number"
-              name="minimum_nights"
-              id="minimum_nights"
-              validation="required"
-              label="Number of Minimum nights"
-              v-model="minimum_nights"
-            />
-            <br />
-            <FormKit
-              type="number"
-              name="maximum_nights"
-              id="maximum_nights"
-              validation="required"
-              label="Number of Maximum nights"
-              v-model="maximum_nights"
-            />
-            <br />
-            <FormKit
-              type="text"
-              name="calculation"
-              id="calculation"
-              label="Calculated price:"
-              v-model="calculated_price"
-              placeholder="€0"
-              readonly
-            />
-          </div>
-        </FormKit>
-      </div>
+        </div>
+      </FormKit>
     </fieldset>
   </main>
 </template>
@@ -304,7 +299,14 @@ button {
 }
 h1 {
   font-family: var(--fk-font-family-label);
+  margin-left: 150px;
 }
+
+.input-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 #image_home {
   padding-top: 25px !important;
   margin-right: 750px !important;
@@ -323,10 +325,17 @@ h1 {
   min-width: 0;
   padding-left: 100px;
 }
+
+#calculated-price {
+    width: 120px !important;
+    height: 50px !important;
+    margin-bottom: 50px;
+}
+
 .element3 {
   padding-top: 45px;
-  margin-right: 120px;
-  margin-left: 120px;
+  margin-right: 550px;
+  margin-left: 550px;
   border-radius: 60px;
   margin-top: 400px;
   min-width: 0;
@@ -370,5 +379,7 @@ h1 {
 }
 
 #second {
+    width: 100%;
 }
+
 </style>
