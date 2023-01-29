@@ -5,8 +5,7 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBRegressor
 from pickle import load
-import sklearn
-# from codings import numerical, categorical, bins, amenities
+
 
 numerical = (
      "host_is_superhost",
