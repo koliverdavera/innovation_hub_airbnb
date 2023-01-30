@@ -1,6 +1,5 @@
 import os
 import sys
-
 import pandas as pd
 import numpy as np
 from xgboost import XGBRegressor
@@ -74,8 +73,6 @@ def preprocess_request(params: dict,
     result = pd.DataFrame(np.zeros((1, len(model.feature_names_in_))),
                           columns=model.feature_names_in_)
     for feature, value in params.items():
-        if feature == "accomodates":
-            feature = "accommodates"
         if feature in numerical:
             result[feature][0] = float(value)
         if feature in categorical:
@@ -120,11 +117,10 @@ def get_prediction(params: dict) -> float:
     :param params: a dictionary containing all features for prediction (as described in Notion)
     :return: price prediction
     """
-    print(os.listdir())
     obj = preprocess_request(params,
-                             model_name="../model/trained_objects/airbnb_predictor.json",
-                             feature_scaler_name="../model/trained_objects/feature_scaler.pkl")
+                             model_name="model/trained_objects/airbnb_predictor.json",
+                             feature_scaler_name="model/trained_objects/feature_scaler.pkl")
     price = _predict(obj,
-                     model_name='../model/trained_objects/airbnb_predictor.json',
-                     target_scaler_name="../model/trained_objects/target_scaler.pkl")
+                     model_name='model/trained_objects/airbnb_predictor.json',
+                     target_scaler_name="model/trained_objects/target_scaler.pkl")
     return price

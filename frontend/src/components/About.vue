@@ -26,19 +26,19 @@ export default {
         {
           id: 1,
           name: "Dorijan Kos",
-          img: "../../public/Snapchat-37253659.jpg",
+          img: "/Snapchat-37253659.jpg",
           description: "Front-End developer",
         },
         {
           id: 2,
           name: "Aqsa Muzaffar Ahmed",
-          img: "https://via.placeholder.com/150",
+          img: "/MicrosoftTeams-image (1).jpg",
           description: "Back-End developer",
         },
         {
           id: 3,
           name: "Vera Koliverda",
-          img: "https://via.placeholder.com/150",
+          img: "/MicrosoftTeams-image.jpg",
           description: "A.I. developer",
         },
       ],
@@ -55,6 +55,7 @@ export default {
   height: 280px;
   width: 280px;
   margin-top: 100px;
+  border-radius: 50%;
 }
 
 .card-body {
@@ -63,11 +64,11 @@ export default {
 
 .card {
   margin-top: 150px;
-  margin: 80px;
+  margin: 90px;
   border-radius: 20px;
-  box-shadow: 2px 2px 10px #c6d8ff;
-  background-color: #dae6ff;
-  border: 2px solid #c6d8ff;
+  box-shadow: 4px 4px 10px rgb(178, 238, 150);
+  background-color: #ffffff;
+  border: 3px solid rgb(178, 238, 150);
 }
 
 h2 {

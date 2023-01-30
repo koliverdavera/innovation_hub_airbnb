@@ -1,11 +1,12 @@
 import os
 from flask import flash, redirect, url_for, session
 from flask import request
+from flask_session import Session
 from flask import Flask
 from flask_cors import CORS
 from functools import wraps
 from model.predictor import get_prediction
-from data.database import session
+from data.database import db_session
 from data.users import User
 from typing import Tuple
 from data.database import create_db, DB_CONNECTION_STRING
@@ -14,7 +15,10 @@ app = Flask(__name__)
 Cors = CORS(app)
 CORS(app, resources={r'/*': {'origins': '*'}}, CORS_SUPPORTS_CREDENTIALS=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
-DbSession = session()
+app.config["SECRET_KEY"] = "SECRET"
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+DbSession = db_session()
 
 
 def check_email(email: str) -> bool:
@@ -35,7 +39,7 @@ def check_new_user(email: str, username: str) -> Tuple[int, str]:
     new_email = check_email(email)
     new_username = check_username(username)
     if new_email and new_username:
-        return 1, "New account successfully created"
+        return 1, "success"
     if not new_email:
         return 0, "An account with this email already exists"
     if not new_username:
@@ -59,6 +63,8 @@ def sign_up():
     print(f"got email {email}, status = {status}, response = {response}")
     if status:
         new_user = User(username, email, password)
+        session['logged_in'] = True
+        session.update()
         DbSession.add(new_user)
         DbSession.commit()
     return response
@@ -73,7 +79,9 @@ def login():
         if not found_user:
             return "User with this username does not exist"
         if found_user.password == password_candidate:
-            return "Successfully logged in"
+            session['logged_in'] = True
+            session.update()
+            return "You are now logged in"
         else:
             return "Wrong password"
 
@@ -81,7 +89,7 @@ def login():
 def is_logged_in(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'logged_in' in session:
+        if 'logged_in' in session.keys():
             return f(*args, **kwargs)
         else:
             flash('Unauthorized, Please login', 'danger')
@@ -90,7 +98,7 @@ def is_logged_in(f):
 
 
 @app.route('/calculator', methods=['POST', 'GET'])
-@is_logged_in
+# @is_logged_in
 def calculator() -> str:
     params = request.json
     prediction = get_prediction(params)
@@ -100,7 +108,7 @@ def calculator() -> str:
 @app.route('/logout')
 @is_logged_in
 def logout():
-    session.clear()
+    db_session.clear()
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 

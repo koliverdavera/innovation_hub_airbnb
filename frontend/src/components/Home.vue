@@ -23,101 +23,97 @@
       src="../../public/exchangeHouseMoney.webp"
     />
     <fieldset name="calculator" id="here" class="element3">
-      <h1 class="calc_title">Calculator</h1>
+      <h1 class="calc_title">Airbnb Calculator</h1>
       <br />
       <br />
-      <div class="col-6">
+      <FormKit
+        type="form"
+        name="calc"
+        @submit="getCoordinates"
+        submit-label="Calculate"
+        :submit-attrs="{
+          'suffix-icon': 'submit',
+        }"
+        #default="{ value }"
+      >
         <FormKit
-          type="form"
-          name="calc"
-          @submit="getCoordinates"
-          submit-label="Calculate"
-          :submit-attrs="{
-            'suffix-icon': 'submit',
-          }"
-          #default="{ value }"
-        >
-          <FormKit
-            type="text"
-            name="address"
-            id="address"
-            validation="required"
-            label="Address"
-            help="Enter the location of the rental place"
-            placeholder="77 rue La Boétie, Paris, 75015"
-            v-model="address"
-          />
-          <input
-            v-model="longitude"
-            type="hidden"
-            validation-visibility="live"
-          />
-          <input
-            v-model="latitude"
-            type="hidden"
-            validation-visibility="live"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="bedrooms"
-            id="bedrooms"
-            label="Bedrooms"
-            validation="required"
-            validation-visibility="live"
-            help="How many bedrooms does the rental place have?"
-            v-model="bedrooms"
-          />
-          <br />
-          <FormKit
-            type="number"
-            name="bathrooms"
-            id="bathrooms"
-            label="Bathrooms"
-            validation="required"
-            validation-visibility="live"
-            help="How many bathrooms does the rental place have?"
-            v-model="bathrooms"
-          />
-          <br />
-          <FormKit
-            type="select"
-            name="propertyType"
-            id="propertyType"
-            placeholder="Select a type"
-            :options="[
-              'Entire rental unit',
-              'Private room in rental unit',
-              'Entire condo',
-              'Room in boutique hotel',
-              'Room in hotel',
-              'Entire loft',
-              'Entire home',
-              'Private room in condo',
-              'Entire townhouse',
-              'Shared room in rental unit',
-            ]"
-            validation="required"
-            label="Property Type"
-            v-model="property_type"
-          />
-          <br />
-          <FormKit
-            type="select"
-            name="roomType"
-            id="roomType"
-            placeholder="Select a type"
-            :options="[
-              'Entire home/apt',
-              'Private room',
-              'Hotel room',
-              'Shared room',
-            ]"
-            validation="required"
-            label="Room Type"
-            v-model="room_type"
-          />
-          <br />
+          type="text"
+          name="address"
+          id="address"
+          class="input" 
+          validation="required"
+          label="Address"
+          help="Enter the location of the rental place"
+          placeholder="77 rue La Boétie, Paris, 75015"
+          v-model="address"
+        />
+        <input v-model="longitude" type="hidden" validation-visibility="live" />
+        <input v-model="latitude" type="hidden" validation-visibility="live" />
+        <br />
+        <FormKit
+          type="number"
+          name="bedrooms"
+          id="bedrooms"
+          class="input" 
+          label="Bedrooms"
+          validation="required"
+          validation-visibility="live"
+          help="How many bedrooms does the rental place have?"
+          v-model="bedrooms"
+        />
+        <br />
+        <FormKit
+          type="number"
+          name="bathrooms"
+          id="bathrooms"
+          class="input" 
+          label="Bathrooms"
+          validation="required"
+          validation-visibility="live"
+          help="How many bathrooms does the rental place have?"
+          v-model="bathrooms"
+        />
+        <br />
+        <FormKit
+          type="select"
+          name="propertyType"
+          class="input" 
+          id="propertyType"
+          placeholder="Select a type"
+          :options="[
+            'Entire rental unit',
+            'Private room in rental unit',
+            'Entire condo',
+            'Room in boutique hotel',
+            'Room in hotel',
+            'Entire loft',
+            'Entire home',
+            'Private room in condo',
+            'Entire townhouse',
+            'Shared room in rental unit',
+          ]"
+          validation="required"
+          label="Property Type"
+          v-model="property_type"
+        />
+        <br />
+        <FormKit
+          type="select"
+          name="roomType"
+          id="roomType"
+          class="input" 
+          placeholder="Select a type"
+          :options="[
+            'Entire home/apt',
+            'Private room',
+            'Hotel room',
+            'Shared room',
+          ]"
+          validation="required"
+          label="Room Type"
+          v-model="room_type"
+        />
+        <br />
           <FormKit
             type="checkbox"
             name="amenities"
@@ -209,6 +205,7 @@
             v-model="maximum_nights"
           />
           <br />
+          <div id="calculated-price">
           <FormKit
             type="text"
             name="calculation"
@@ -218,8 +215,8 @@
             placeholder="€0"
             readonly
           />
-        </FormKit>
-      </div>
+        </div>
+      </FormKit>
     </fieldset>
   </main>
 </template>
@@ -244,7 +241,7 @@ export default {
       amenities: "",
       minimum_nights: "",
       maximum_nights: "",
-      calculated_price: 0
+      calculated_price: 0,
     };
   },
   methods: {
@@ -256,18 +253,21 @@ export default {
         );
         this.longitude = response.data.results[0].geometry.location.lng;
         this.latitude = response.data.results[0].geometry.location.lat;
-        const calculated_response = await axios.post("https://691a-163-5-23-68.eu.ngrok.io/calculator", {
-          longitude: this.longitude,
-          latitude: this.latitude,
-          bedrooms: this.bedrooms,
-          bathrooms: this.bathrooms,
-          accomodates: this.accomodates,
-          room_type: this.room_type,
-          property_type: this.property_type,
-          amenities: this.amenities,
-          minimum_nights: this.minimum_nights,
-          maximum_nights: this.maximum_nights,
-        });
+        const calculated_response = await axios.post(
+          "https://127.0.0.1:5001/calculator",
+          {
+            longitude: this.longitude,
+            latitude: this.latitude,
+            bedrooms: this.bedrooms,
+            bathrooms: this.bathrooms,
+            accommodates: this.accomodates,
+            room_type: this.room_type,
+            property_type: this.property_type,
+            amenities: this.amenities,
+            minimum_nights: this.minimum_nights,
+            maximum_nights: this.maximum_nights,
+          }
+        );
         this.calculated_price = `€ ${calculated_response.data}`;
       } catch (error) {
         console.error(error);
@@ -299,7 +299,14 @@ button {
 }
 h1 {
   font-family: var(--fk-font-family-label);
+  margin-left: 150px;
 }
+
+.input-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 #image_home {
   padding-top: 25px !important;
   margin-right: 750px !important;
@@ -318,10 +325,17 @@ h1 {
   min-width: 0;
   padding-left: 100px;
 }
+
+#calculated-price {
+    width: 120px !important;
+    height: 50px !important;
+    margin-bottom: 50px;
+}
+
 .element3 {
   padding-top: 45px;
-  margin-right: 120px;
-  margin-left: 120px;
+  margin-right: 550px;
+  margin-left: 550px;
   border-radius: 60px;
   margin-top: 400px;
   min-width: 0;
@@ -363,4 +377,9 @@ h1 {
   --fk-bg-submit-hover: rgb(99, 175, 64) !important;
   border-radius: 40px;
 }
+
+#second {
+    width: 100%;
+}
+
 </style>
