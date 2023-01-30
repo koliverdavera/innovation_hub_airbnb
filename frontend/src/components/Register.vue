@@ -59,7 +59,7 @@ export default {
     async handleSubmit() {
       try {
         const response = await axios.post(
-          "https://e2d3-2a01-e0a-585-d830-9543-2e12-101d-1f88.eu.ngrok.io/register",
+          "https://e1c1-163-5-23-68.eu.ngrok.io",
           this.form
         );
         if (response.data.feedback === "successful registration") {
