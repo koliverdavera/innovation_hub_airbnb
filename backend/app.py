@@ -1,7 +1,6 @@
 import os
 from flask import flash, redirect, url_for, session
 from flask import request
-from flask_session import Session
 from flask import Flask
 from flask_cors import CORS
 from functools import wraps
@@ -17,7 +16,6 @@ CORS(app, resources={r'/*': {'origins': '*'}}, CORS_SUPPORTS_CREDENTIALS=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config["SECRET_KEY"] = "SECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
 DbSession = db_session()
 
 
