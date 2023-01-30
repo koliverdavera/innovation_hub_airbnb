@@ -58,7 +58,11 @@ export default {
     async handleSubmit() {
       try {
         const response = await axios.post(
+<<<<<<< HEAD
           "http://127.0.0.1:5001/register",
+=======
+          "https://ac40-2a01-e0a-585-d830-d0ab-574e-7d8c-ff73.eu.ngrok.io/register",
+>>>>>>> f8627e8b27b999bffb23e926d7090d7f1b343306
           this.form
         );
         if (response.data === "success") {
