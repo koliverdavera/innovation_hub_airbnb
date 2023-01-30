@@ -1,87 +1,83 @@
+import os
 from flask import flash, redirect, url_for, session
 from flask import request
 from flask import Flask
 from flask_cors import CORS
-from flask_mysqldb import MySQL
 from functools import wraps
 from model.predictor import get_prediction
+from data.database import session
+from data.users import User
+from typing import Tuple
+from data.database import create_db, DB_CONNECTION_STRING
 
 app = Flask(__name__)
 Cors = CORS(app)
 CORS(app, resources={r'/*': {'origins': '*'}}, CORS_SUPPORTS_CREDENTIALS=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
-
-# Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'hub_db'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'hub_db'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-# init MYSQL
-mysql = MySQL(app)
+DbSession = session()
 
 
-# Index
+def check_email(email: str) -> bool:
+    existing_email = DbSession.query(User).filter(User.email == email).first()
+    if not existing_email:
+        return True
+    return False
+
+
+def check_username(username: str) -> bool:
+    existing_username = DbSession.query(User).filter(User.username == username).first()
+    if not existing_username:
+        return True
+    return False
+
+
+def check_new_user(email: str, username: str) -> Tuple[int, str]:
+    new_email = check_email(email)
+    new_username = check_username(username)
+    if new_email and new_username:
+        return 1, "New account successfully created"
+    if not new_email:
+        return 0, "An account with this email already exists"
+    if not new_username:
+        return 0, "An account with this username already exists"
+
+
 @app.route('/')
 def index():
     return "Airbnb calculator"
 
 
-# User Register
 @app.route('/register', methods=['GET', 'POST'])
 def sign_up():
-    # TODO: check user input
     username = request.json["username"]
     email = request.json["email"]
     password = request.json["password"]
-
-    if len(email) == 0 or len(password) == 0 or len(email) == 0:
+    if len(username) == 0 or len(email) == 0 or len(password) == 0:
         return 'Some credentials are missing.'
+    print("hello")
+    status, response = check_new_user(email, username)
+    print(f"got email {email}, status = {status}, response = {response}")
+    if status:
+        new_user = User(username, email, password)
+        DbSession.add(new_user)
+        DbSession.commit()
+    return response
 
-    cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO user(email, username, password) "
-                "VALUES( %s, %s, %s)",
-                (email, username, password))
-    mysql.connection.commit()
-    cur.close()
-    return "success"
 
-
-# User login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         username = request.json["username"]
         password_candidate = request.json["password"]
-
-        cur = mysql.connection.cursor()
-        # Get user by username
-        result = cur.execute("SELECT * FROM user "
-                             "WHERE username = %s", [username])
-
-        if result > 0:
-            # Get stored hash
-            data = cur.fetchone()
-            password = data['password']
-            username = data['username']
-
-            # Compare Passwords
-            if password_candidate == password:
-                # Passed
-                session['logged_in'] = True
-                session['username'] = username
-                ret = 'You are now logged in'
-            else:
-                ret = 'Invalid password'
-            # Close connection
-            cur.close()
-            return ret
+        found_user = DbSession.query(User).filter(User.username == username).one()
+        if not found_user:
+            return "User with this username does not exist"
+        if found_user.password == password_candidate:
+            return "Successfully logged in"
         else:
-            error = 'Username not found'
-            return error
+            return "Wrong password"
 
 
-# Check if user logged in
 def is_logged_in(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -90,19 +86,17 @@ def is_logged_in(f):
         else:
             flash('Unauthorized, Please login', 'danger')
             return redirect(url_for('login'))
-
     return wrap
 
 
 @app.route('/calculator', methods=['POST', 'GET'])
-# @is_logged_in
+@is_logged_in
 def calculator() -> str:
     params = request.json
     prediction = get_prediction(params)
     return str(prediction)
 
 
-# Logout
 @app.route('/logout')
 @is_logged_in
 def logout():
@@ -114,4 +108,7 @@ def logout():
 if __name__ == '__main__':
     app.debug = True
     app.secret_key = 'secret123'
+    db_is_created = os.path.exists(DB_CONNECTION_STRING)
+    if not db_is_created:
+        create_db()
     app.run(host='127.0.0.1', ssl_context="adhoc", port=5001)
