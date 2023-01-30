@@ -32,6 +32,7 @@
 <script>
 import axios from "axios";
 import { createToaster } from "@meforma/vue-toaster";
+const toaster = createToaster();
 
 export default {
   name: "Login",
@@ -43,31 +44,30 @@ export default {
         password: "",
         feedback: "",
       },
-      $toast: createToaster(),
     };
   },
   methods: {
     submitHandler() {
       axios
         .post(
-          "https://e2d3-2a01-e0a-585-d830-9543-2e12-101d-1f88.eu.ngrok.io/login",
+          "https://ac40-2a01-e0a-585-d830-d0ab-574e-7d8c-ff73.eu.ngrok.io/login",
           this.formData
         )
         .then((response) => {
-          if (response.data.feedback === "successful login") {
+          if (response.data === "You are now logged in") {
             // Handle successful login
-            this.user = response.data.user;
             this.isLoggedIn = true;
-            this.$toast.success(`You've successfully logged in!`);
-            // Redirect the user to the home page or any other page
+            window.alert("You've successfully logged in!");
             this.$router.push({ name: "Home" });
+
+            // Redirect the user to the home page or any other page
           } else {
-            throw new Error("Invalid email or password");
+            window.alert("Invalid email or password!");
+
           }
         })
         .catch((error) => {
           this.error = error.message;
-          this.$toast.error(this.error);
         });
     },
     goToRegister() {
