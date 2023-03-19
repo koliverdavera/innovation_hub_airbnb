@@ -6,7 +6,7 @@ After brainstorming and discussing several promising ideas we decided to create 
 Presentation available [here](https://github.com/koliverdavera/innovation_hub_airbnb/tree/main/project%20presentation).
 
 ### Project description
-We created a web application to estimate the best price for accommodation per night (PPA - price per night). 
+We created a web application to estimate the best price for accommodation per night (PPN - price per night). 
 A user enters information about housing to check and immediately gets predicted price. 
 This product can be used by both property owners to get the best revenue from real estate and
 by travelers to check whether the price for accommodation is adequate.
