@@ -1,9 +1,9 @@
-#EPITECH 2022, Guided Project: Innovation Hub
+# EPITECH 2022, Guided Project: Innovation Hub
 ## Airbnb Calculator
 
 The idea of the project is to create a prototype of digital product and deploy it for beta testing.
 After brainstorming and discussing several promising ideas we decided to create a **tool for Airbnb users**.
-
+Presentation available [here](https://github.com/koliverdavera/innovation_hub_airbnb/tree/main/project%20presentation).
 
 ### Project description
 We created a web application to estimate the best price for accommodation per night (PPA - price per night). 
@@ -24,5 +24,4 @@ There are noticeable trends in seasonality for accommodation prices on Airbnb.
 
 ### Frameworks used for development and deployment
 Web application backend is built on Flask, frontend on Vue Js. Backend and frontend components interact using REST API. 
-It was deployed on Microsoft Azure and Heroku. Project
-presentation is available here.
+It was deployed on Microsoft Azure and Heroku.
